@@ -1,47 +1,42 @@
 #include <cstdlib>
 #include <iostream>
+#include <string.h>
 
 using namespace std;
 
-typedef flight_schedule* link;
-//template <class Type> class LinkedList;
+typedef class flight_schedule * link;
 
-//template <class Type>
 class flight_schedule {
-//class ListElem {
-//public:
-//	flight_schedule () {prev=next=NULL;}
-//	ListElem (const Type elem){prev=next=NULL; data=elem;}
 public:
-	struct data    // Flight data
-	{
-		int flight_num;
-		char city[30];
-		int time;
-		int gate;
-		char remark[15];  // Flight status
-		link next;        // pointer to next element
-		link back;        // pointer to previous element
-	};
+	flight_schedule (int, char* , int, int, char* , int);
+    // Flight data
+	int flight_num;
+	char city[30];
+	int time;
+	int gate;
+	char remark[15];  // Flight status
+	link next;        // pointer to next element
+	link back;        // pointer to previous element
+
 };
 
-flight_schedule::flight_schedule( int in_flight, char in_city[30], int in_time, int in_gate, char in_remark[15])
+flight_schedule::flight_schedule(int in_flight, char in_city[30], int in_time, int in_gate, char in_remark[15])
 {
-	data.flight_num = in_flight;
-	data.city = in_city;
-	data.time = in_time;
-	data.gate = in_gate;
-	data.remark = in_remark;
-	data.first = data.last = NULL;
+	flight_num = in_flight;
+	strcpy(city,in_city);
+	time = in_time;
+	gate = in_gate;
+	strcpy(remark,in_remark);
+	next = back = NULL;
 }
 
 //---------------------------------------------------------
 //template <class Type>
 class airport {
 public:
-	airport(){pfirst=plast=NULL;}
+	airport(){firstptr=lastptr=NULL;}
 	~airport();
-	void insertFlight (const Type&,int);
+	void insertFlight (link);
 	void deleteFlight(int);//delete item from the list
 	void printall();//print out all items on the screen
 	int countitem();//return the number of items in the list
@@ -49,7 +44,7 @@ public:
 	link findmax();//show the max item
 	link find(int);//find an item
 protected:
-	link firstptr; // pfirst element in the list
+	link firstptr; // firstptr element in the list
 	link lastptr; // last element in the list
 public:
 	link temp; //for temporary use only
@@ -60,7 +55,7 @@ airport::~airport (void)
 {
 	link item;
 	link next;
-	for(item =pfirst; item!= NULL; item= next){
+	for(item =firstptr; item!= NULL; item= next){
 		next = item->next;
 		delete item;
 	}
@@ -68,60 +63,25 @@ airport::~airport (void)
 }
 //insert item
 
-void airport::insertFlight (const Type &elem,int pos)
+void airport::insertFlight (link myFlight)
 {
-  ListElem<Type> *item = new ListElem<Type>(elem);//new element to be inserted
+  link item = new link(elem);//new element to be inserted
   bool inserted=false;
-  //empty list
-  if(pfirst==NULL && plast==NULL){
-    item->prev=item->next=NULL;
-    pfirst=item;
-    plast=item;
-    inserted=true;
-}
-//insert new item at the beginning of the list
-else if(pos==1)
-  {
-     item->next=pfirst;
-     item->prev=NULL;
-     pfirst=item;
-     inserted=true;
-   }
-//insert new item between items
-else if(pos>1 && pos<=countitem()){
-     ListElem<Type> *ta;
-     ta=pfirst;
-     for(int t=1;t<pos;t=t+1){ta=ta->next;} //move to the insertion point
-     item->next=ta;
-     item->prev=ta->prev;
-     ta->prev->next=item;
-     ta->prev=item;
-     inserted=true;
-   }
-//insert new item at the end of the list
-else if(pos==countitem()+1){
-
-    item->next=NULL; //The next link of the item is null.
-    plast->next=item;
-    item->prev=plast;
-    plast=item;
-    inserted=true;
-
-   }
-//show message if position is not valid
- else cout<<"Invalid position! Position must be between 1 and "<<countitem()+2<<"\n";
-
- if(inserted!=false) cout<<"Inserted\n";
+  item->next=NULL; //The next link of the item is null.
+  lastptr->next=item;
+  item->back=lastptr;
+  lastptr=item;
+  inserted=true;
+  if(inserted!=false) cout<<"Inserted\n";
 }
 
 //Print out all items on the screen
 
-template <class Type>
-void LinkedList<Type>::printall()
+void airport::printall()
 {
-  ListElem<Type> *i;
-  i=pfirst;
-  if(pfirst!=NULL){
+  link i;
+  i=firstptr;
+  if(firstptr!=NULL){
       while(i!=NULL){
             cout<<i->data<<endl;
             i=i->next;
@@ -131,12 +91,11 @@ void LinkedList<Type>::printall()
 
 }
 
-template <class Type>
-int LinkedList<Type>::countitem()
+int airport::countitem()
 {
-  ListElem<Type> *i;
+  link i;
   int t=0;
-  i=pfirst;
+  i=firstptr;
   while(i!=NULL){
       t=t+1;
       i=i->next;
@@ -147,12 +106,11 @@ int LinkedList<Type>::countitem()
 
 }
 
-template <class Type>
-ListElem<Type>  *LinkedList<Type>::findmin(){
-	ListElem<Type> *min,*tr;
-	min=pfirst;
-	tr=pfirst;
-	if(pfirst!=NULL){
+link airport::findmin(){
+	link min,tr;
+	min=firstptr;
+	tr=firstptr;
+	if(firstptr!=NULL){
 
 		while(tr!=NULL){
 			if(tr->data<min->data) min=tr;
@@ -164,12 +122,11 @@ ListElem<Type>  *LinkedList<Type>::findmin(){
 
 }
 
-template <class Type>
-ListElem<Type> * LinkedList<Type>::findmax(){
-	ListElem<Type> *max,*tr;
-	max=pfirst;
-	tr=pfirst;
-	if(pfirst!=NULL){
+link airport::findmax(){
+	link max,tr;
+	max=firstptr;
+	tr=firstptr;
+	if(firstptr!=NULL){
 
 		while(tr!=NULL){
 			if(tr->data>max->data) max=tr;
@@ -181,10 +138,10 @@ ListElem<Type> * LinkedList<Type>::findmax(){
 
 }
 
-link  airport::find(int val){
+link airport::find(int val){
 	link tr;
-	tr=pfirst;
-	if(pfirst!=NULL){
+	tr=firstptr;
+	if(firstptr!=NULL){
 
 		while(tr!=NULL){
 			if(tr->data==val) break; //found the tartget=>stop searching
@@ -200,47 +157,50 @@ void airport::deleteFlight(int pos){
 
   int i;
   bool deleted=false;
-  if(pfirst!=NULL){    //make sure the list is not empty.
-       link temp,del;
-
-       if(pos==1){//delete the first item
-           if(countitem()==1){ //The list contains only one item
-    	pfirst=NULL;
-    	plast=NULL;
-   	deleted=true;
-                    }
-       else{ //The list contains more than one item
-    	 temp=pfirst;
- 	 pfirst=pfirst->next;
- 	 pfirst->prev=NULL;
-  	 temp=NULL;
-   	 deleted=true;
-                   }
-
-         }
-
-     else if(pos>1 && pos<=countitem()){//delete middle item
-      	 temp=pfirst;
-      	 for(i=1;i<pos;i=i+1){temp=temp->next;}
-      	 if(temp->next==NULL) {plast=temp->prev;plast->next=NULL;}
-       	 else{
-		 temp->prev->next=temp->next;
-    		 temp->next->prev=temp->prev;
-
-		}
+  if(firstptr!=NULL)
+  {    //make sure the list is not empty.
+	  link temp;
+      if(pos==1)
+      {//delete the first item
+    	  if(countitem()==1){ //The list contains only one item
+    	  firstptr=NULL;
+    	  lastptr=NULL;
+    	  deleted=true;
+      }
+    	  else
+    	  {  //The list contains more than one item
+    		  temp=firstptr;
+    		  firstptr=firstptr->next;
+    		  firstptr->prev=NULL;
+    		  temp=NULL;
+    		  deleted=true;
+    	  }
+      }
+      else if(pos>1 && pos<=countitem())
+      {//delete middle item
+      	 temp=firstptr;
+      	 for(i=1;i<pos;i=i+1)
+      	 {
+      		 temp=temp->next;
+      	 }
+      	 if(temp->next==NULL)
+      	 {
+      		 lastptr=temp->prev;
+      		 lastptr->next=NULL;
+      	 }
+       	 else
+       	 {
+       		 temp->prev->next=temp->next;
+       		 temp->next->prev=temp->prev;
+       	 }
     	 temp=NULL;
     	 deleted=true;
-    	 }
-
-
-     else cout<<"Invalid position!\n";
-
-}
-
+      }
+      else cout<<"Invalid position!\n";
+  }
   else cout<<"No item found\n";
-
-  if(deleted!=false)cout<<"Deleted\n";
-
+  if(deleted!=false)
+	  cout<<"Deleted\n";
 }
 
 void showmenu(){
@@ -260,25 +220,33 @@ cout<<"8.Exit\n";
 
 }
 
-void select(){
-  airport myAirport = new airport();
-  int val, pos, ch;
+void select(airport myAirport)
+{
+  int val, flightnum, ch;
   char yes='y';
   while(yes=='y'){
 	showmenu();
-    cout<<"Enter your choice:";cin>>ch;
+    cout<<"Enter your choice:";
+    cin>>ch;
     switch(ch){
         case 1:
-  	cout<<"Value:";
-  	cin>>val;
-	cout<<"Position:";
-	cin>>pos;
-	myAirport->insertNode(val,pos);
-	break;
-         case 2:
-	cout<<"Position:";
-	cin>>pos;
-	myAirport->deleteFlight(pos);
+        	link newFlight;
+        	cout<<"Flight Number? ";
+			cin >> newFlight->flight_num;
+			cout<<"Destination city? ";
+			cin>> newFlight->city;
+			cout<<"Departure time? ";
+			cin>> newFlight->time;
+			cout<<"Gate number? ";
+			cin>> newFlight->gate;
+			cout<<"Status of flight? ";
+			cin>>newFlight->remark;
+			myAirport.insertFlight(newFlight);
+			break;
+		case 2:
+	cout<<"Flight number to delete? ";
+	cin>>flightnum;
+	myAirport.deleteFlight(flightnum);
 	break;
         case 3:
 	cout<<"Number of items:";cout<<myAirport->countitem()<<endl;
@@ -320,7 +288,8 @@ void select(){
 int main()
 
 {
- 	select();
+	airport myAirport = new airport();
+ 	select(myAirport);
  	return 0;
 }
 
