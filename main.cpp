@@ -7,7 +7,7 @@ using namespace std;
 
 typedef class flight_schedule * link;
 
-class flight_schedule {
+class flight_schedule{
 public:
 	flight_schedule();
     // Flight data
@@ -28,8 +28,8 @@ flight_schedule::flight_schedule()
 	time = 0;
 	gate = 0;
 	remark[15] = {0};
-	next = NULL;
-	back = NULL;
+	next = 0;
+	back = 0;
 }
 
 class airport {
@@ -67,7 +67,7 @@ void airport::insertFlight (link myFlight)
 {
   //new element to be inserted
   bool inserted=false;
-  myFlight->next=NULL; //The next link of the item is null.
+  myFlight->next=0; //The next link of the item is null.
   lastptr->next=myFlight;
   myFlight->back=lastptr;
   lastptr=myFlight;
@@ -251,8 +251,9 @@ void select(airport* myAirport)
     cin>>ch;
     switch(ch){
         case 1:
-        	link newFlight;
-        	cout<<"Flight Number? ";
+        {
+        	link newFlight = new flight_schedule();
+          	cout<<"Flight Number? ";
 			cin >> newFlight->flight;
 			cout<<"Destination city? ";
 			cin>> newFlight->city;
@@ -263,6 +264,7 @@ void select(airport* myAirport)
 			cout<<"Status of flight? ";
 			cin>>newFlight->remark;
 			myAirport->insertFlight(newFlight);
+        }
 			break;
 		case 2:
 			cout<<"Flight number to delete? ";
