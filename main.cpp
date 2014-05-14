@@ -37,30 +37,29 @@ flight_schedule::flight_schedule( int in_flight, char in_city[30], int in_time, 
 
 //---------------------------------------------------------
 //template <class Type>
-class LinkedList {
+class airport {
 public:
-	LinkedList(){pfirst=plast=NULL;}
-	~LinkedList();
-	void insertNode (const Type&,int);
-	void deleteNode(int);//delete item from the list
+	airport(){pfirst=plast=NULL;}
+	~airport();
+	void insertFlight (const Type&,int);
+	void deleteFlight(int);//delete item from the list
 	void printall();//print out all items on the screen
 	int countitem();//return the number of items in the list
-	ListElem<Type> *findmin();//show the min item
-	ListElem<Type> *findmax();//show the max item
-	ListElem<Type> *find(int);//find an item
+	link findmin();//show the min item
+	link findmax();//show the max item
+	link find(int);//find an item
 protected:
-	ListElem<Type> *pfirst; // pfirst element in the list
-	ListElem<Type> *plast; // last element in the list
+	link firstptr; // pfirst element in the list
+	link lastptr; // last element in the list
 public:
-	ListElem<Type> *temp; //for temporary use only
+	link temp; //for temporary use only
 };
 
 //destructor
-template <class Type>
-LinkedList<Type>::~LinkedList (void)
+airport::~airport (void)
 {
-	ListElem<Type> *item;
-	ListElem<Type> *next;
+	link item;
+	link next;
 	for(item =pfirst; item!= NULL; item= next){
 		next = item->next;
 		delete item;
@@ -69,8 +68,7 @@ LinkedList<Type>::~LinkedList (void)
 }
 //insert item
 
-template <class Type>
-void LinkedList<Type>::insertNode (const Type &elem,int pos)
+void airport::insertFlight (const Type &elem,int pos)
 {
   ListElem<Type> *item = new ListElem<Type>(elem);//new element to be inserted
   bool inserted=false;
@@ -183,9 +181,8 @@ ListElem<Type> * LinkedList<Type>::findmax(){
 
 }
 
-template <class Type>
-ListElem<Type>  *LinkedList<Type>::find(int val){
-	ListElem<Type> *tr;
+link  airport::find(int val){
+	link tr;
 	tr=pfirst;
 	if(pfirst!=NULL){
 
@@ -199,13 +196,12 @@ ListElem<Type>  *LinkedList<Type>::find(int val){
               return tr;
 }
 
-template <class Type>
-void LinkedList<Type>::deleteNode(int pos){
+void airport::deleteFlight(int pos){
 
   int i;
   bool deleted=false;
-  if(pfirst!=NULL){ //make sure the list is not empty.
-       ListElem<Type> *temp,*del;
+  if(pfirst!=NULL){    //make sure the list is not empty.
+       link temp,del;
 
        if(pos==1){//delete the first item
            if(countitem()==1){ //The list contains only one item
@@ -250,22 +246,22 @@ void LinkedList<Type>::deleteNode(int pos){
 void showmenu(){
 
 cout<<"=================================\n";
-cout<<"Doubly Linked List Operations Menu\n";
+cout<<"        Airport Menu\n";
 cout<<"=================================\n";
-cout<<"1.Add a new item\n";
-cout<<"2.Delete an item\n";
-cout<<"3.Show number of items\n";
-cout<<"4.Show min item\n";
-cout<<"5.Show max item\n";
-cout<<"6.Find an item\n";
-cout<<"7.Show all items\n";
+cout<<"1.Add a new flight\n";
+cout<<"2.Delete a flight\n";
+cout<<"3.Show number of flights\n";
+cout<<"4.Show earliest flight\n";
+cout<<"5.Show latest flight\n";
+cout<<"6.Find a flight\n";
+cout<<"7.Show all flights\n";
 cout<<"8.Exit\n";
 
 
 }
 
 void select(){
-  LinkedList<int> *MyList=new LinkedList<int>();
+  airport myAirport = new airport();
   int val, pos, ch;
   char yes='y';
   while(yes=='y'){
@@ -273,39 +269,42 @@ void select(){
     cout<<"Enter your choice:";cin>>ch;
     switch(ch){
         case 1:
-  	cout<<"Value:";cin>>val;
-	cout<<"Position:";cin>>pos;
-	MyList->insertNode(val,pos);
+  	cout<<"Value:";
+  	cin>>val;
+	cout<<"Position:";
+	cin>>pos;
+	myAirport->insertNode(val,pos);
 	break;
          case 2:
-	cout<<"Position:";cin>>pos;
-	MyList->deleteNode(pos);
+	cout<<"Position:";
+	cin>>pos;
+	myAirport->deleteFlight(pos);
 	break;
         case 3:
-	cout<<"Number of items:";cout<<MyList->countitem()<<endl;
+	cout<<"Number of items:";cout<<myAirport->countitem()<<endl;
 	break;
        case 4:
-	MyList->temp=MyList->findmin();
-	if(MyList->temp!=NULL)
-		cout<<"The min item:"<<MyList->temp->data<<endl;
+	myAirport->temp=myAirport->findmin();
+	if(myAirport->temp!=NULL)
+		cout<<"The min item:"<<myAirport->temp->data<<endl;
 	else cout<<"Not found\n";
 	break;
         case 5:
-	MyList->temp=MyList->findmax();
-	if(MyList->temp!=NULL)
-		cout<<"The max item:"<<MyList->temp->data<<endl;
+	myAirport->temp=myAirport->findmax();
+	if(myAirport->temp!=NULL)
+		cout<<"The max item:"<<myAirport->temp->data<<endl;
 	else cout<<"Not found\n";
 	break;
         case 6:
 	cout<<"Find what:";
 	cin>>val;
-	MyList->temp=MyList->find(val);
-	if(MyList->temp!=NULL) cout<<"Found:"<<MyList->temp->data<<endl;
+	myAirport->temp=myAirport->find(val);
+	if(myAirport->temp!=NULL) cout<<"Found:"<<myAirport->temp->data<<endl;
 	else cout<<"Not found!"<<endl;
 	break;
         case 7:
 	cout<<"All items:\n";
-	MyList->printall();
+	myAirport->printall();
 	break;
         case 8: exit(0);
 
