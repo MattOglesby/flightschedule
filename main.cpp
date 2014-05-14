@@ -9,9 +9,9 @@ typedef class flight_schedule * link;
 
 class flight_schedule {
 public:
-	flight_schedule ();
+	flight_schedule();
     // Flight data
-	int flight_num;
+	int flight;
 	char city[30];
 	int time;
 	int gate;
@@ -23,17 +23,15 @@ public:
 
 flight_schedule::flight_schedule()
 {
-	flight_num = 0;
-	city[30] = {};
+	flight = 0;
+	city[30] = {0};
 	time = 0;
 	gate = 0;
-	remark[15] = {};
+	remark[15] = {0};
 	next = NULL;
 	back = NULL;
 }
 
-//---------------------------------------------------------
-//template <class Type>
 class airport {
 public:
 	airport(){firstptr=lastptr=NULL;}
@@ -81,7 +79,7 @@ void airport::insertFlight (link myFlight)
 void printFlight(link x)
 {
 	cout << std::left;
-	cout << " | " << std::setw(6) << x->flight_num
+	cout << " | " << std::setw(6) << x->flight
 		 << " | " << std::setw(30) << x->city
 		 << " | " << std::setw(10) << x->time
 		 << " | " << std::setw(6) << x->gate
@@ -168,7 +166,7 @@ link airport::find(int val){
 	{
 		while(tr!=NULL)
 		{
-			if(tr->flight_num == val)
+			if(tr->flight == val)
 				break; //found the tartget=>stop searching
 			else tr=tr->next;//otherwise continue searching
 		}
@@ -255,7 +253,7 @@ void select(airport* myAirport)
         case 1:
         	link newFlight;
         	cout<<"Flight Number? ";
-			cin >> newFlight->flight_num;
+			cin >> newFlight->flight;
 			cout<<"Destination city? ";
 			cin>> newFlight->city;
 			cout<<"Departure time? ";
@@ -278,7 +276,7 @@ void select(airport* myAirport)
         case 4:
         	myAirport->temp = myAirport->findmin();
         	if(myAirport->temp!=NULL)
-        		cout << "The earliest flight:" << myAirport->temp->flight_num <<endl;
+        		cout << "The earliest flight:" << myAirport->temp->flight <<endl;
         	else
         		cout<<"Not found\n";
         	break;
@@ -286,7 +284,7 @@ void select(airport* myAirport)
         	myAirport->temp=myAirport->findmax();
         	if(myAirport->temp!=NULL)
         		cout<<"The latest flight is:"
-        		    << myAirport->temp->flight_num << endl;
+        		    << myAirport->temp->flight << endl;
         	else
         		cout << "Not found.\n";
         	break;
@@ -295,7 +293,7 @@ void select(airport* myAirport)
         	cin>>val;
         	myAirport->temp = myAirport->find(val);
         	if(myAirport->temp!=NULL)
-        		cout << "Found:" << myAirport->temp->flight_num << endl;
+        		cout << "Found:" << myAirport->temp->flight << endl;
         	else
         		cout<<"Not found!"<<endl;
         	break;
