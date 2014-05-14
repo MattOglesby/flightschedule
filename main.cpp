@@ -3,20 +3,40 @@
 
 using namespace std;
 
-template <class Type> class LinkedList;
+typedef flight_schedule* link;
+//template <class Type> class LinkedList;
 
-template <class Type>
-class ListElem {
+//template <class Type>
+class flight_schedule {
+//class ListElem {
+//public:
+//	flight_schedule () {prev=next=NULL;}
+//	ListElem (const Type elem){prev=next=NULL; data=elem;}
 public:
-	ListElem (const Type elem){prev=next=NULL; data=elem;}
-public:
-	Type data; // the element data
-	ListElem *prev; // previous link
-	ListElem *next; // next link
+	struct data    // Flight data
+	{
+		int flight_num;
+		char city[30];
+		int time;
+		int gate;
+		char remark[15];  // Flight status
+		link next;        // pointer to next element
+		link back;        // pointer to previous element
+	};
 };
 
+flight_schedule::flight_schedule( int in_flight, char in_city[30], int in_time, int in_gate, char in_remark[15])
+{
+	data.flight_num = in_flight;
+	data.city = in_city;
+	data.time = in_time;
+	data.gate = in_gate;
+	data.remark = in_remark;
+	data.first = data.last = NULL;
+}
+
 //---------------------------------------------------------
-template <class Type>
+//template <class Type>
 class LinkedList {
 public:
 	LinkedList(){pfirst=plast=NULL;}
