@@ -2,7 +2,8 @@
 #include <iostream>
 #include <string.h>
 #include <iomanip>
-
+#include <sstream>
+#include <fstream>
 using namespace std;
 
 typedef class flight_schedule * link;
@@ -28,13 +29,16 @@ flight_schedule::flight_schedule()
 	time = 0;
 	gate = 0;
 	remark[15] = {0};
-	next = 0;
-	back = 0;
+	link next = NULL;
+	link back = NULL;
 }
 
 class airport {
 public:
-	airport(){firstptr=lastptr=NULL;}
+	airport()
+	{
+		firstptr=lastptr=NULL;
+	}
 	~airport();
 	void insertFlight (link);
 	void deleteFlight(int);//delete item from the list
@@ -43,6 +47,8 @@ public:
 	link findmin();//show the min item
 	link findmax();//show the max item
 	link find(int);//find an item
+	void write2file(); //write contents of linked list database to a file
+	link readfromfile();
 protected:
 	link firstptr; // firstptr element in the list
 	link lastptr; // last element in the list
@@ -66,15 +72,26 @@ airport::~airport (void)
 void airport::insertFlight (link myFlight)
 {
   //new element to be inserted
+  link item = new flight_schedule();
+  item = myFlight;
   bool inserted=false;
-  myFlight->next=0; //The next link of the item is null.
-  lastptr->next=myFlight;
-  myFlight->back=lastptr;
-  lastptr=myFlight;
-  inserted=true;
-  if(inserted!=false) cout<<"Inserted\n";
+  if (firstptr==NULL && lastptr==NULL)
+  {
+	  item->back=item->next=NULL;
+	  firstptr=item;
+	  lastptr=item;
+	  inserted=true;
+  }
+  else
+  {
+	  item->next=NULL; //The next link of the item is null.
+	  lastptr->next=item;
+	  item->back=lastptr;
+	  lastptr=item;
+	  inserted=true;
+	  if(inserted!=false) cout<<"Inserted\n";
+  }
 }
-
 //Print out all items on the screen
 void printFlight(link x)
 {
@@ -89,18 +106,19 @@ void printFlight(link x)
 
 void airport::printall()
 {
+  cout << std::left;
+  cout << " | " << std::setw(6) << "Flight"
+    	 << " | " << std::setw(30) << "City"
+		 << " | " << std::setw(10) << "Departure"
+		 << " | " << std::setw(6) << "Gate"
+		 << " | " << std::setw(15) << "Status"
+		 << " | " << endl;
   link i;
   i = firstptr;
   if(firstptr!=NULL)
   {
       while(i!=NULL)
       {
-    		cout << " | " << std::setw(6) << "Flight"
-    			 << " | " << std::setw(30) << "City"
-    			 << " | " << std::setw(10) << "Departure"
-    			 << " | " << std::setw(6) << "Gate"
-    			 << " | " << std::setw(15) << "Status"
-    			 << " | " << endl;
             printFlight(i);
             i=i->next;
       }
@@ -108,7 +126,50 @@ void airport::printall()
   else cout<<"This is no item.\n";
 
 }
+void airport::write2file()
+{
+	ofstream outputFile;
+	outputFile.open("linkedlistdb.db");
+	link i;
+	  i = firstptr;
+	  if(firstptr!=NULL)
+	  {
+	      while(i!=NULL)
+	      {
+	            outputFile << i->flight << endl
+	            		<< i->city << endl
+	            		<< i->time << endl
+	            		<< i->gate << endl
+	            		<< i->remark << endl;
+	            i=i->next;
+	      }
+	  }
+	  else cout<<"This is no item.\n";
+	  outputFile.close();
+	  cout << "File successfully written. \n";
+	  return;
+}
+link airport::readfromfile()
+{
+	link i = new flight_schedule();
+	i->next = firstptr;
+	ifstream inputFile ("linkedlistdb.db");
 
+	if (inputFile.is_open() && !inputFile.eof())
+	{
+	while(!inputFile.eof()) {
+		cout << inputFile;
+		cout << inputFile;
+		cout << inputFile;
+		cout << inputFile;
+		cout << inputFile;
+			i=i->next;
+	}
+    cout << "Data imported successfully." << endl;
+    inputFile.close();
+	}
+	return i;
+}
 int airport::countitem()
 {
   link i;
@@ -236,11 +297,13 @@ cout<<"4.Show earliest flight\n";
 cout<<"5.Show latest flight\n";
 cout<<"6.Find a flight\n";
 cout<<"7.Show all flights\n";
-cout<<"8.Exit\n";
+cout<<"8.Write to file\n";
+cout<<"9.Read from file\n";
+cout<<"10.Exit\n";
 
 
 }
-
+using namespace std;
 void select(airport* myAirport)
 {
   int val, flightnum, ch;
@@ -256,13 +319,13 @@ void select(airport* myAirport)
           	cout<<"Flight Number? ";
 			cin >> newFlight->flight;
 			cout<<"Destination city? ";
-			cin>> newFlight->city;
+			cin>>newFlight->city;
 			cout<<"Departure time? ";
 			cin>> newFlight->time;
 			cout<<"Gate number? ";
 			cin>> newFlight->gate;
 			cout<<"Status of flight? ";
-			cin>>newFlight->remark;
+			cin >> newFlight->remark;
 			myAirport->insertFlight(newFlight);
         }
 			break;
@@ -302,8 +365,21 @@ void select(airport* myAirport)
         case 7:
         	cout<<"All items:\n";
         	myAirport->printall();
-	break;
-        case 8: exit(0);
+        break;
+        case 8:
+
+        	myAirport->write2file();
+
+        	break;
+        case 9:
+        {
+        	link templinkdb = new flight_schedule();
+        	templinkdb = myAirport->readfromfile();
+        	myAirport->insertFlight(templinkdb);
+        }
+        cout << "Import complete." << endl;
+        	break;
+        case 10: exit(0);
 
         default: cout<<"Invalid choice\n";
 
