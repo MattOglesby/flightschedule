@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <string.h>
+#include <iomanip>
 
 using namespace std;
 
@@ -8,7 +9,7 @@ typedef class flight_schedule * link;
 
 class flight_schedule {
 public:
-	flight_schedule (int, char* , int, int, char* , int);
+	flight_schedule ();
     // Flight data
 	int flight_num;
 	char city[30];
@@ -20,14 +21,15 @@ public:
 
 };
 
-flight_schedule::flight_schedule(int in_flight, char in_city[30], int in_time, int in_gate, char in_remark[15])
+flight_schedule::flight_schedule()
 {
-	flight_num = in_flight;
-	strcpy(city,in_city);
-	time = in_time;
-	gate = in_gate;
-	strcpy(remark,in_remark);
-	next = back = NULL;
+	flight_num = 0;
+	city[30] = {};
+	time = 0;
+	gate = 0;
+	remark[15] = {};
+	next = NULL;
+	back = NULL;
 }
 
 //---------------------------------------------------------
@@ -65,25 +67,43 @@ airport::~airport (void)
 
 void airport::insertFlight (link myFlight)
 {
-  link item = new link(elem);//new element to be inserted
+  //new element to be inserted
   bool inserted=false;
-  item->next=NULL; //The next link of the item is null.
-  lastptr->next=item;
-  item->back=lastptr;
-  lastptr=item;
+  myFlight->next=NULL; //The next link of the item is null.
+  lastptr->next=myFlight;
+  myFlight->back=lastptr;
+  lastptr=myFlight;
   inserted=true;
   if(inserted!=false) cout<<"Inserted\n";
 }
 
 //Print out all items on the screen
+void printFlight(link x)
+{
+	cout << std::left;
+	cout << " | " << std::setw(6) << x->flight_num
+		 << " | " << std::setw(30) << x->city
+		 << " | " << std::setw(10) << x->time
+		 << " | " << std::setw(6) << x->gate
+		 << " | " << std::setw(15) << x->remark
+		 << " | " << endl;
+}
 
 void airport::printall()
 {
   link i;
-  i=firstptr;
-  if(firstptr!=NULL){
-      while(i!=NULL){
-            cout<<i->data<<endl;
+  i = firstptr;
+  if(firstptr!=NULL)
+  {
+      while(i!=NULL)
+      {
+    		cout << " | " << std::setw(6) << "Flight"
+    			 << " | " << std::setw(30) << "City"
+    			 << " | " << std::setw(10) << "Departure"
+    			 << " | " << std::setw(6) << "Gate"
+    			 << " | " << std::setw(15) << "Status"
+    			 << " | " << endl;
+            printFlight(i);
             i=i->next;
       }
   }
@@ -110,14 +130,16 @@ link airport::findmin(){
 	link min,tr;
 	min=firstptr;
 	tr=firstptr;
-	if(firstptr!=NULL){
-
-		while(tr!=NULL){
-			if(tr->data<min->data) min=tr;
+	if(firstptr!=NULL)
+	{
+		while(tr!=NULL)
+		{
+			if(tr->time < min->time)
+				min=tr;
 			tr=tr->next;
 		}
 		return min;
-                  }
+	}
 	else return NULL;//empty list
 
 }
@@ -126,31 +148,32 @@ link airport::findmax(){
 	link max,tr;
 	max=firstptr;
 	tr=firstptr;
-	if(firstptr!=NULL){
-
+	if(firstptr!=NULL)
+	{
 		while(tr!=NULL){
-			if(tr->data>max->data) max=tr;
+			if(tr->time > max->time)
+				max=tr;
 			tr=tr->next;
 		}
 		return max;
-                  }
-	else return NULL;//empty list
-
+	}
+	else
+		return NULL;//empty list
 }
 
 link airport::find(int val){
 	link tr;
 	tr=firstptr;
-	if(firstptr!=NULL){
-
-		while(tr!=NULL){
-			if(tr->data==val) break; //found the tartget=>stop searching
+	if(firstptr!=NULL)
+	{
+		while(tr!=NULL)
+		{
+			if(tr->flight_num == val)
+				break; //found the tartget=>stop searching
 			else tr=tr->next;//otherwise continue searching
-			}
-
-
+		}
 	}
-              return tr;
+	return tr;
 }
 
 void airport::deleteFlight(int pos){
@@ -171,7 +194,7 @@ void airport::deleteFlight(int pos){
     	  {  //The list contains more than one item
     		  temp=firstptr;
     		  firstptr=firstptr->next;
-    		  firstptr->prev=NULL;
+    		  firstptr->back=NULL;
     		  temp=NULL;
     		  deleted=true;
     	  }
@@ -185,13 +208,13 @@ void airport::deleteFlight(int pos){
       	 }
       	 if(temp->next==NULL)
       	 {
-      		 lastptr=temp->prev;
+      		 lastptr=temp->back;
       		 lastptr->next=NULL;
       	 }
        	 else
        	 {
-       		 temp->prev->next=temp->next;
-       		 temp->next->prev=temp->prev;
+       		 temp->back->next=temp->next;
+       		 temp->next->back=temp->back;
        	 }
     	 temp=NULL;
     	 deleted=true;
@@ -220,7 +243,7 @@ cout<<"8.Exit\n";
 
 }
 
-void select(airport myAirport)
+void select(airport* myAirport)
 {
   int val, flightnum, ch;
   char yes='y';
@@ -241,38 +264,44 @@ void select(airport myAirport)
 			cin>> newFlight->gate;
 			cout<<"Status of flight? ";
 			cin>>newFlight->remark;
-			myAirport.insertFlight(newFlight);
+			myAirport->insertFlight(newFlight);
 			break;
 		case 2:
-	cout<<"Flight number to delete? ";
-	cin>>flightnum;
-	myAirport.deleteFlight(flightnum);
-	break;
+			cout<<"Flight number to delete? ";
+			cin>>flightnum;
+			myAirport->deleteFlight(flightnum);
+			break;
         case 3:
-	cout<<"Number of items:";cout<<myAirport->countitem()<<endl;
-	break;
-       case 4:
-	myAirport->temp=myAirport->findmin();
-	if(myAirport->temp!=NULL)
-		cout<<"The min item:"<<myAirport->temp->data<<endl;
-	else cout<<"Not found\n";
-	break;
+        	cout<<"Number of flights: "
+        	    << myAirport->countitem() << endl;
+        	break;
+        case 4:
+        	myAirport->temp = myAirport->findmin();
+        	if(myAirport->temp!=NULL)
+        		cout << "The earliest flight:" << myAirport->temp->flight_num <<endl;
+        	else
+        		cout<<"Not found\n";
+        	break;
         case 5:
-	myAirport->temp=myAirport->findmax();
-	if(myAirport->temp!=NULL)
-		cout<<"The max item:"<<myAirport->temp->data<<endl;
-	else cout<<"Not found\n";
-	break;
+        	myAirport->temp=myAirport->findmax();
+        	if(myAirport->temp!=NULL)
+        		cout<<"The latest flight is:"
+        		    << myAirport->temp->flight_num << endl;
+        	else
+        		cout << "Not found.\n";
+        	break;
         case 6:
-	cout<<"Find what:";
-	cin>>val;
-	myAirport->temp=myAirport->find(val);
-	if(myAirport->temp!=NULL) cout<<"Found:"<<myAirport->temp->data<<endl;
-	else cout<<"Not found!"<<endl;
-	break;
+        	cout<<"Find what:";
+        	cin>>val;
+        	myAirport->temp = myAirport->find(val);
+        	if(myAirport->temp!=NULL)
+        		cout << "Found:" << myAirport->temp->flight_num << endl;
+        	else
+        		cout<<"Not found!"<<endl;
+        	break;
         case 7:
-	cout<<"All items:\n";
-	myAirport->printall();
+        	cout<<"All items:\n";
+        	myAirport->printall();
 	break;
         case 8: exit(0);
 
@@ -288,7 +317,8 @@ void select(airport myAirport)
 int main()
 
 {
-	airport myAirport = new airport();
+	airport* myAirport;
+	myAirport = new airport();
  	select(myAirport);
  	return 0;
 }
